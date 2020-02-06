@@ -3,6 +3,7 @@ package cdio.strucs;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 public class RegionVertex {
 
@@ -14,8 +15,8 @@ public class RegionVertex {
     }
 
     // Member methods:
-    public static ArrayList<RegionVertex> ConvertToRegionVertices(ArrayList<RegionR3> regions) {
-        ArrayList<RegionVertex> out = new ArrayList<RegionVertex>();
+    public static List<RegionVertex> ConvertToRegionVertices(List<RegionR3> regions) {
+        List<RegionVertex> out = new ArrayList<RegionVertex>();
         for(RegionR3 region: regions) {
             RegionVertex v = new RegionVertex(region);
             out.add(v);

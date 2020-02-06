@@ -1,10 +1,15 @@
 package cdio.strucs;
 
 import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
+import javax.swing.plaf.synth.Region;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class BnBTree {
 
@@ -35,6 +40,19 @@ public class BnBTree {
         this.nodeCount++;
     }
 
+    public List<RegionVertex> getChildren(RegionVertex node) {
+        return Graphs.successorListOf(this.tree, node);
+    }
+
+    public RegionVertex getParent(RegionVertex node) {
+        List<RegionVertex> parents = Graphs.predecessorListOf(this.tree, node);
+        if(parents.size()>1)
+            throw new IllegalArgumentException("Not a tree - multiple parents found.");
+        if(parents.isEmpty())
+            return null;
+        return parents.get(0);
+    }
+
     public void branch(RegionVertex branchRoot, int maxBranchDepth) {
         // TODO: TEST ACCURACY!
 
@@ -48,28 +66,25 @@ public class BnBTree {
         // All okay, branch now till depth maxBranchDepth:
         int currentDepth = 0;
         RegionVertex localRoot = branchRoot;
-        ArrayList<RegionVertex> currentNodesToBranch = new ArrayList<RegionVertex>();
-        ArrayList<RegionVertex> newNodesToBranch = new ArrayList<RegionVertex>();
+        List<RegionVertex> currentNodesToBranch = new ArrayList<RegionVertex>();
+        List<RegionVertex> newNodesToBranch = new ArrayList<RegionVertex>();
         currentNodesToBranch.add(branchRoot);
 
         while(currentDepth <= maxBranchDepth) {
             for(RegionVertex node:currentNodesToBranch) {
                 // For each node to be branched, branch node:
                 // Get the list of children of node:
-                ArrayList<RegionVertex> children = RegionVertex.ConvertToRegionVertices(
+                List<RegionVertex> children = RegionVertex.ConvertToRegionVertices(
                         node.region.branchEven(RegionR3.GetBranchSize(), RegionR3.GetBranchSize(),
                         RegionR3.GetBranchSize()));
-
                 // Add edge from node to its children:
                 for(RegionVertex child:children) {
                     this.tree.addEdge(node, child);
                     nodeCount++;
                 }
-
                 // Add children node to new nodes to be branched:
                 newNodesToBranch.addAll(children);
             }
-
             // Increase node depth and set current nodes to branch to new nodes:
             currentDepth++;
             currentNodesToBranch = newNodesToBranch;
