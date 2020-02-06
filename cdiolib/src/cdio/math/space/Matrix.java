@@ -1,111 +1,88 @@
 package cdio.math.space;
 
-import java.util.Arrays;
+import libprotnmr.math.Matrix3;
 
-public class Matrix {
+public abstract class Matrix  {
 
-    // Members:
-    public int nrows, ncols;
-    public double[][] data;
+    // Methods in matrix:
+    public abstract double get(int i, int j);
+    public abstract void set(int i, int j, double val);
+    public abstract int getNRows();
+    public abstract int getNCols();
+    public abstract void transpose();
 
-    public Matrix() {
-        this.nrows = 0;
-        this.ncols = 0;
-        this.data = null;
+    // Member methods:
+    public boolean isValidIndex(int i, int j) {
+        if(i >= getNRows() || j >= getNCols())
+            return false;
+        else
+            return true;
     }
 
-    public Matrix(int nrows, int ncols) {
-        this.nrows = nrows;
-        this.ncols = ncols;
-        this.data = new double[nrows][ncols];
-        Arrays.fill(this.data, 0);
+    // Static methods:
+    public static boolean compatible(Matrix m1, Matrix m2) {
+        return (m1.getNCols() == m2.getNRows());
     }
 
-    public Matrix(double[][] data){
-        if(data == null)
-            throw new IllegalArgumentException("Cannot initialize with null matrix.");
-        this.nrows = data.length;
-        this.ncols = data[0].length;
-        this.data = new double[nrows][ncols];
-
-        for(int i=0; i<nrows; i++)
-            for(int j=0; j<ncols; j++)
-                this.data[i][j] = data[i][j];
-    }
-
-    public Matrix(RowVector v){
-        this.nrows = 1;
-        this.ncols = v.dim;
-        this.data = new double[nrows][ncols];
-        for(int j=0; j<ncols; j++)
-            this.data[0][j] = v.data[j];
-    }
-
-    public Matrix(ColumnVector v){
-        this.nrows = v.dim;
-        this.ncols = 1;
-        this.data = new double[nrows][ncols];
-        for(int j=0; j<ncols; j++)
-            this.data[j][0] = v.data[j];
-    }
-
-    public Matrix(Matrix other){
-        this.nrows = other.nrows;
-        this.ncols = other.ncols;
-        this.data = new double[nrows][ncols];
-
-        for(int i=0; i<nrows; i++)
-            for(int j=0; j<ncols; j++)
-                this.data[i][j] = other.data[i][j];
-    }
-
-    // Member Methods:
-    public RowVector getAsRowVector(){
-        if(nrows != 1)
-            throw new IllegalArgumentException("Only applicable if matrix has 1 row.");
-
-        RowVector v = new RowVector(this.ncols);
-        for(int i=0; i<this.ncols; i++)
-            v.data[i] = this.data[0][i];
-        return v;
-    }
-
-    public ColumnVector getAsColumnVector(){
-        if(ncols != 1)
-            throw new IllegalArgumentException("Only  applicable if matrix has 1 column.");
-
-        ColumnVector v = new ColumnVector(this.nrows);
-        for(int i=0; i<this.nrows;i++)
-            v.data[i] = this.data[i][0];
-        return v;
-    }
-
-
-    // Static Methods:
-    public static Matrix Multiply(Matrix m1, Matrix m2) {
-        if(m1.ncols != m2.nrows)
-            throw new IllegalArgumentException("Matrices not compatible for Multiplication.");
-
-        Matrix m3 = new Matrix(m1.nrows, m2.ncols);
-
-        for(int i=0; i<m1.nrows; i++) {
-            for(int j=0; j<m2.ncols; j++) {
-                for(int k=0; k<m1.ncols; k++)
-                    m3.data[i][j] += m1.data[i][k] * m2.data[k][j];
+    public static SquareMatrix Multiply(SquareMatrix m1, SquareMatrix m2) {
+        if(!compatible(m1, m2))
+            throw new IllegalArgumentException("Incompatible matrices.");
+        SquareMatrix out = new SquareMatrix(m1.getNRows());
+        for(int i=0; i<m1.getNRows(); i++) {
+            for(int j=0; j<m2.getNCols(); j++) {
+                double val = 0d;
+                for(int k=0; k<m1.getNRows(); k++)
+                    val += m1.get(i,k) * m2.get(k, j);
+                out.set(i,j,val);
             }
         }
-        return m3;
+        return out;
     }
 
-    public static RowVector Multiply(RowVector v, Matrix m) {
-        Matrix mt = new Matrix(v);
-        Matrix prod =  Multiply(mt, m);
-        return prod.getAsRowVector();
+    public static Vector Multiply(Vector v, SquareMatrix m) {
+        if(!compatible(v, m))
+            throw new IllegalArgumentException("Incompatible matrices.");
+        Vector out = new Vector(m.getNCols(), Vector.VectorType.RowVector);
+        for(int i=0; i<m.getNCols(); i++) {
+            double val =0d;
+            for(int k=0; k<m.getNCols(); k++) {
+                val += v.get(0, k) * m.get(k, i);
+            }
+            out.set(0, i, val);
+        }
+        return out;
     }
 
-    public static ColumnVector Multiply(Matrix m, ColumnVector v) {
-        Matrix mt = new Matrix(v);
-        Matrix prod =  Multiply(m, mt);
-        return prod.getAsColumnVector();
+    public static Vector Multiply(SquareMatrix m, Vector v) {
+        if(!compatible(m, v))
+            throw new IllegalArgumentException("Incompatible matrices.");
+        Vector out = new Vector(m.getNCols(), Vector.VectorType.ColumnVector);
+        for(int i=0; i<m.getNCols(); i++) {
+            double val = 0d;
+            for(int k=0; k<m.getNCols(); k++) {
+                val += m.get(i, k) * v.get(k, 0);
+            }
+            out.set(i, 0, val);
+        }
+        return out;
     }
+
+    public static double Multiply(Vector v1, Vector v2) {
+        if(!compatible(v1, v2))
+            throw new IllegalArgumentException("Incompatible matrices");
+        double out =0d;
+        for(int i=0; i<v1.getNCols(); i++)
+            out += v1.get(0,i) * v2.get(i, 0);
+        return out;
+    }
+
+    public static Matrix3 ToMatrix3(Matrix m) {
+        if(m.getNRows()!= 3 || m.getNCols() != 3)
+            throw new IllegalArgumentException("Cannot be converted to Matrix3.");
+
+        return new Matrix3(m.get(0,0), m.get(0,1), m.get(0,2),
+                           m.get(1,0), m.get(1,1), m.get(1,2),
+                           m.get(2,0), m.get(1,2), m.get(2,2));
+    }
+
 }

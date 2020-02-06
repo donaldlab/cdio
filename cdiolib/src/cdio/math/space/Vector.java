@@ -1,71 +1,137 @@
 package cdio.math.space;
 
-public class Vector {
+import libprotnmr.geom.Vector3;
 
-    // Members:
-    public int dim;
-    public double[] data;
+import java.util.Arrays;
 
-    public Vector(){
-        this.dim = 0;
-        this.data = null;
+public class Vector extends Matrix {
+
+    // members:
+
+    public enum VectorType {
+        RowVector, ColumnVector
     }
 
-    public Vector(int dim, double[] data){
-        if(dim > data.length)
-            throw new IllegalArgumentException("Data cannot have fewer elements than dim.");
-        else if(dim <= 0)
-            throw new IllegalArgumentException("Dim must be > 0.");
-        else {
-            this.data = new double[dim];
-            for(int i=0; i<dim; i++)
-                this.data[i] = data[i];
-            this.dim = dim;
-        }
-    }
+    public int dimension;
+    public double[] data; public VectorType type;
 
-    public Vector(Vector other) {
-        this.dim = other.dim;
-        this.data = new double[dim];
-        for(int i=0; i<dim; i++)
-            this.data[i] = other.data[i];
-    }
 
-    public Vector(Quaternion q) {
-       this.dim = 4;
-       this.data = new double[4];
-       this.data[0] = q.a; this.data[1] = q.b; this.data[2] = q.c; this.data[3] = q.d;
-    }
+    // initializers:
 
-    // Methods:
-    public int getDim() {
-        return dim;
-    }
-
-    public double[] getData() {
-        double[] data_copy = new double[this.dim];
-        for(int i=0; i<this.dim; i++)
-            data_copy[i] = this.data[i];
-        return data_copy;
-    }
-
-    public void setData(double data[]) {
-        this.dim = data.length;
-        this.data = new double[this.dim];
-        for(int i=0; i<this.dim; i++)
+    private void set(double[] data) {
+        this.dimension = data.length;
+        this.data = new double[data.length];
+        for(int i=0; i<dimension; i++)
             this.data[i] = data[i];
     }
 
-    // Static Methods:
-    public static double Multiply(RowVector rv, ColumnVector cv) {
-        if(rv.getDim() != cv.getDim())
-            throw new IllegalArgumentException("Incompatible vectors.");
+    public Vector(){
+        dimension=0;
+        data = null;
+        type = VectorType.RowVector;
+    }
 
-        double out = 0.0d;
-        for(int i=0; i<rv.getDim(); i++)
-            out += rv.data[i] * cv.data[cv.getDim()-i-1];
+    public Vector(int dimension) {
+        this.dimension = dimension;
+        data = new double[dimension];
+        Arrays.fill(data, 0);
+        type = VectorType.RowVector;
+    }
 
-        return out;
+    public Vector(int dimension, VectorType type) {
+        this.dimension = dimension;
+        data = new double[dimension];
+        Arrays.fill(data, 0);
+        this.type = type;
+    }
+
+    public Vector(double[] data) {
+        set(data);
+        this.type = VectorType.RowVector;
+    }
+
+    public Vector(double[] data, VectorType type) {
+        set(data);
+        this.type = type;
+    }
+
+    public Vector(Vector other) {
+        set(other.data);
+        this.type = other.type;
+    }
+
+    // methods:
+
+    public boolean isRowVector() {
+        return this.type == VectorType.RowVector;
+    }
+
+    public boolean isColumnVector() {
+        return this.type == VectorType.ColumnVector;
+    }
+
+    @Override
+    public void transpose() {
+        if(isRowVector())
+            this.type = VectorType.ColumnVector;
+        else
+            this.type = VectorType.RowVector;
+    }
+
+    @Override
+    public double get(int i, int j) {
+        if(!(isValidIndex(i,j)))
+            throw new IllegalArgumentException("Invalid index.");
+        if(type == VectorType.RowVector)
+            return  data[i];
+        else
+            return data[j];
+    }
+
+    @Override
+    public void set(int i, int j, double val) {
+        if(!(isValidIndex(i,j)))
+            throw new IllegalArgumentException("Invalid index.");
+        if(type == VectorType.RowVector)
+            data[i] = val;
+        else
+            data[j] = val;
+    }
+
+    @Override
+    public int getNRows() {
+        if(isRowVector())
+            return dimension;
+        else
+            return 1;
+    }
+
+    @Override
+    public int getNCols() {
+        if(isColumnVector())
+            return dimension;
+        else
+            return 1;
+    }
+
+    public Vector getTranspose() {
+        Vector v = new Vector(this);
+        v.transpose();
+        return v;
+    }
+
+    // static methods:
+    public static Vector3 ToVector3(Vector v) {
+        if(v.data.length != 3)
+            throw new IllegalArgumentException("Cannot convert to Vector3.");
+
+        if(v.isColumnVector()) {
+            return new Vector3(v.get(0,0), v.get(1,0), v.get(2,0));
+        }
+        else {
+            return new Vector3(v.get(0,0), v.get(0,1), v.get(0,2));
+        }
     }
 
 }
+
