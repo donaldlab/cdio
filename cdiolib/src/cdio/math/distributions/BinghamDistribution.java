@@ -11,8 +11,11 @@ public class BinghamDistribution extends ContinuousDistribution<Quaternion>{
     public Matrix gamma;
 
     // Initializers:
+
+    // TODO:
     public BinghamDistribution() {}
 
+    // TODO:
     public BinghamDistribution(double[] qL, double[] gamma, double[] qR) {
     }
 
@@ -27,6 +30,22 @@ public class BinghamDistribution extends ContinuousDistribution<Quaternion>{
         return 0;
     }
 
+    // TODO:
+    // Output the Qavg(x) where qi ~ S^3 based of definition of Q in CDIO algorithm:
+    public double[][] QAverage(Quaternion x) {
+        double[][] out = new double[5][5];
+    }
+
+    // TODO:
+    // Output the Q(x) where qi ~ S^3 based of definition of Q in CDIO algorithm:
+    public double[][] QMatrix(Quaternion x) {
+        double[][] out = new double[5][5];
+    }
+
     // Static Methods:
-    public static double PDF(Quaternion qL, double[] gamma, Quaternion qR, Quaternion q) {}
+
+    // TODO:
+    // Outputs the Probability Density of the quaternion q based on Bingham(qL, gamma, qR):
+    public static double PDF(Quaternion qL, double[] gamma, Quaternion qR, Quaternion q) {
+    }
 }

@@ -1,5 +1,7 @@
 package cdio.math.misc;
 
+import cdio.math.distributions.BinghamDistribution;
+
 import java.util.Arrays;
 
 public class BinghamNorm1F1 {
@@ -15,13 +17,15 @@ public class BinghamNorm1F1 {
     public static final double epsilon = 0.00001;
 
 
+    // Returns the evaluated value of HGF = 1F1(gamma)
     public static double Value(double[] gamma) {
         return JNIHyperGeometricFunction.HGF(1, MAX, K, alpha, np, p,
                 nq, q, gamma.length, gamma, 0, null);
     }
 
+    // Return the HGF polynomial instead of computed value:
     public static double[] Polynomial(double[] gamma) {
-        // TODO: Java - C API JNI:
+        // TODO: Java - C API JNI [Return the HGF polynomial instead of computed value]:
         return null;
     }
 
@@ -50,4 +54,6 @@ public class BinghamNorm1F1 {
             return (Value(gammaP3) - Value(gammaP2) - Value(gammaP1) + Value(gamma)) / (Value(gamma) * epsilon * epsilon);
         }
     }
+
+
 }

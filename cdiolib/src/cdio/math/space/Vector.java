@@ -13,7 +13,8 @@ public class Vector extends Matrix {
     }
 
     public int dimension;
-    public double[] data; public VectorType type;
+    public double[] data;
+    public VectorType type;
 
 
     // initializers:

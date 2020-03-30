@@ -14,21 +14,28 @@ JNIEXPORT jdouble JNICALL Java_cdio_math_misc_JNIHyperGeometricFunction_HGF
     double* x_native = (double*)malloc(sizeof(double)*x_len);
     double* y_native = (double*)malloc(sizeof(double)*y_len);
 
+
+    // locking on each array in Java stack to read of as C arrays and then do whatever.
+    // Reason: Java stack does not guarantee contiguous mem alloc for arrays!
     jdouble* arraypointer = (*env)->GetDoubleArrayElements(env, p, 0);
     for(i=0; i<p_len; i++)
         p_native[i] = arraypointer[i];
+    (*env)->ReleaseDoubleArrayPointer(env, p, arraypointer, 0);
 
     arraypointer = (*env)->GetDoubleArrayElements(env, q, 0);
     for(i=0; i<q_len; i++)
         q_native[i] = arraypointer[i];
+    (*env)->ReleaseDoubleArrayPointer(env, q, arraypointer, 0);
 
     arraypointer = (*env)->GetDoubleArrayElements(env, x, 0);
     for(i=0; i<x_len; i++)
         x_native[i] = arraypointer[i];
+    (*env)->ReleaseDoubleArrayPointer(env, x, arraypointer, 0);
 
     arraypointer = (*env)->GetDoubleArrayElements(env, y, 0);
     for(i=0; i<y_len; i++)
         y_native[i] = arraypointer[i];
+    (*env)->ReleaseDoubleArrayPointer(env, y, arraypointer, 0);
 
     result = HGF(nmatargs, MAX, K, alpha, p_len, p_native, q_len, q_native,
                  x_len, x_native, y_len, y_native);
@@ -83,7 +90,7 @@ JNIEXPORT jdouble JNICALL Java_cdio_math_misc_JNIHyperGeometricFunction_HGF
 
 
 
-double MHG(int nmatrixargs, int MAX_param, int K_param, double alpha_param, int p_len_param, double *p_param, int q_len_param, 
+double HGF(int nmatrixargs, int MAX_param, int K_param, double alpha_param, int p_len_param, double *p_param, int q_len_param, 
          double *q_param, int x_len_param, double *x_param, int y_len_param, double *y_param) {
 //    printf("DEBUG: 0\n");
    int    h,sl,nmu,i,j,k,*f;
