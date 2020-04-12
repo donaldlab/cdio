@@ -20,12 +20,12 @@ public abstract class Matrix  {
     }
 
     // Static methods:
-    public static boolean compatible(Matrix m1, Matrix m2) {
+    public static boolean Compatible(Matrix m1, Matrix m2) {
         return (m1.getNCols() == m2.getNRows());
     }
 
     public static SquareMatrix Multiply(SquareMatrix m1, SquareMatrix m2) {
-        if(!compatible(m1, m2))
+        if(!Compatible(m1, m2))
             throw new IllegalArgumentException("Incompatible matrices.");
         SquareMatrix out = new SquareMatrix(m1.getNRows());
         for(int i=0; i<m1.getNRows(); i++) {
@@ -40,7 +40,7 @@ public abstract class Matrix  {
     }
 
     public static Vector Multiply(Vector v, SquareMatrix m) {
-        if(!compatible(v, m))
+        if(!Compatible(v, m))
             throw new IllegalArgumentException("Incompatible matrices.");
         Vector out = new Vector(m.getNCols(), Vector.VectorType.RowVector);
         for(int i=0; i<m.getNCols(); i++) {
@@ -54,7 +54,7 @@ public abstract class Matrix  {
     }
 
     public static Vector Multiply(SquareMatrix m, Vector v) {
-        if(!compatible(m, v))
+        if(!Compatible(m, v))
             throw new IllegalArgumentException("Incompatible matrices.");
         Vector out = new Vector(m.getNCols(), Vector.VectorType.ColumnVector);
         for(int i=0; i<m.getNCols(); i++) {
@@ -68,7 +68,7 @@ public abstract class Matrix  {
     }
 
     public static double Multiply(Vector v1, Vector v2) {
-        if(!compatible(v1, v2))
+        if(!Compatible(v1, v2))
             throw new IllegalArgumentException("Incompatible matrices");
         double out =0d;
         for(int i=0; i<v1.getNCols(); i++)

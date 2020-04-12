@@ -119,6 +119,10 @@ public class RegionR3 {
         return key;
     }
 
+    public boolean isLegalRegion() {    // Returns true is object region is a legal region:
+        // TODO:
+    }
+
     // Static methods:
     public static int GetBranchSize() { return BranchSize; }
     public static void SetBranchSize(int s) { BranchSize = s; }

@@ -1,0 +1,3 @@
+* Implement class to handle new functions wrt Quaternions
+* Implement pruning condition
+* Implement Sampling on S3 (inputting yang's set of quaternions)

@@ -51,7 +51,6 @@ public class BnBTree {
     }
 
     public void branch(RegionVertex branchRoot, int maxBranchDepth) {
-        // TODO: TEST ACCURACY!
 
         if(isEmpty())   // Raise error if tree is empty
             throw new IllegalCallerException("Cannot branch an empty tree.");

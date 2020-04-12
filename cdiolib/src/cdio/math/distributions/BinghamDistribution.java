@@ -44,8 +44,9 @@ public class BinghamDistribution extends ContinuousDistribution<Quaternion>{
 
     // Static Methods:
 
-    // TODO:
     // Outputs the Probability Density of the quaternion q based on Bingham(qL, gamma, qR):
     public static double PDF(Quaternion qL, double[] gamma, Quaternion qR, Quaternion q) {
+        // Returns the PDF of RotM(q) given the other 3 params of Bingham Distribution
+        // TODO:
     }
 }
