@@ -12,18 +12,26 @@ public class SquareMatrix extends Matrix {
     public int dimension;
 
     // Initializers:
-    SquareMatrix() {
+    public SquareMatrix() {
         dimension = 0;
         data = null;
     }
 
-    SquareMatrix(int i) {
+    public SquareMatrix(int i) {
         dimension = i;
         data = new double[dimension][dimension];
         Arrays.fill(data, 0d);
     }
 
-    SquareMatrix(SquareMatrix other) {
+    public SquareMatrix(double[][] data, int size) {
+        this.data = new double[size][size];
+        dimension = size;
+        for(int i=0; i<dimension; i++)
+            for(int j=0; j<dimension; j++)
+                this.data[i][j] = data[i][j];
+    }
+
+    public SquareMatrix(SquareMatrix other) {
         dimension = other.dimension;
         data = new double[dimension][dimension];
         for(int i=0; i<dimension; i++)
