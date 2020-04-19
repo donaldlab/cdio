@@ -53,6 +53,13 @@ public abstract class Matrix  {
         return out;
     }
 
+    public static Vector MultiplyByScalar(Vector v, double m) {
+        Vector out = new Vector(v);
+        for(int i=0; i < v.data.length; i++)
+            out.data[i] = out.data[i] * m;
+        return out;
+    }
+
     public static Vector Multiply(SquareMatrix m, Vector v) {
         if(!Compatible(m, v))
             throw new IllegalArgumentException("Incompatible matrices.");

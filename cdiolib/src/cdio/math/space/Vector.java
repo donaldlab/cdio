@@ -121,6 +121,14 @@ public class Vector extends Matrix {
         return v;
     }
 
+    public double getNorm() {
+        double norm = 0;
+        for(int i =0; i < data.length; i++)
+            norm += data[i] * data[i];
+        norm = Math.sqrt(norm);
+        return norm;
+    }
+
     // static methods:
     public static Vector3 ToVector3(Vector v) {
         if(v.data.length != 3)
