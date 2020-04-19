@@ -1,6 +1,9 @@
 package cdio.strucs;
 
-import javax.lang.model.type.ArrayType;
+import cdio.math.space.SaupeTensorVector;
+import libprotnmr.math.Quaternion;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RegionR3 {
@@ -12,11 +15,14 @@ public class RegionR3 {
     public double x_upper, x_lower;
     public double y_upper, y_lower;
     public double z_upper, z_lower;
+    public ArrayList<RegionS3> allowedLS3;
+
 
     public void set(double a, double b, double c, double d, double e, double f) {
         x_lower = a; x_upper = d;
         y_lower = b; y_upper = e;
         z_lower = c; z_lower = f;
+        allowedLS3 = null;
     }
 
     public RegionR3() {
@@ -88,6 +94,7 @@ public class RegionR3 {
         return z_upper-z_lower;
     }
 
+    // Branch / divide current region evenly
     public ArrayList<RegionR3>  branchEven(int Nx, int Ny, int Nz) {
         double xWidth = getXWidth()/Nx;
         double yWidth = getYWidth()/Ny;
@@ -106,6 +113,7 @@ public class RegionR3 {
         return branches;
     }
 
+    // Branch / divide current region evenly
     public ArrayList<RegionR3> branchEven(double xWidth, double yWidth, double zWidth) {
         int Nx = (int) (getXWidth()/xWidth);
         int Ny = (int) (getYWidth()/yWidth);
@@ -119,8 +127,71 @@ public class RegionR3 {
         return key;
     }
 
+    // Returns true if the current region is a legal region (bound exists):
     public boolean isLegalRegion() {    // Returns true is object region is a legal region:
-        // TODO:
+        double U1, U2, U3, U4, L1, L2, L3, L4;
+        U2 = getXUpper(); L2 = getXLower();
+        U3 = getYUpper(); L3 = getYLower();
+        U4 = getZUpper(); L4 = getZLower();
+        U1 = -(U2 + U3 + U4); L1 = -(L2 + L3 + L4);
+
+        if((L1 >= U4) && (L4 >= U3) && (L3 >= U2))
+            return true;
+        else
+            return false;
+    }
+
+    // Returns true if the region in R3 can be pruned out for our purposes in pruning step 1
+    public boolean isPrunable1(SaupeTensorVector s1, SaupeTensorVector s2) throws IOException {
+        if(!this.isLegalRegion())
+            return false;
+
+        double PC1 = s2.getPrincipleComponent();
+        if(getSLowerBoundOnR3(s1) <= PC1 && getSUpperBoundOnR3(s1) >= PC1) {
+            return false;
+        }
+        else
+            return true;
+    }
+
+    // Gets the upper bound of the PC of transformed s vector
+    // after left rotation and averaging operation (refer to BnB algorithm : Qi et al. 2017)
+    public double getSUpperBoundOnR3(SaupeTensorVector s) throws IOException  {
+        ThreeSphereSampler.Initialize();
+        double maxDa = 0;
+        for(Quaternion q : ThreeSphereSampler.QList) {
+            SaupeTensorVector st = new SaupeTensorVector(s);
+            st.rotateByQ(q);
+            st.averageByLambda(getXLower(), getYLower(), getZLower());
+            double t = Math.abs(st.getPrincipleComponent());
+            if(t >= maxDa)
+                maxDa = t;
+        }
+
+        return maxDa;
+    }
+
+    // Gets the lower bound of the PC of transformed s vector
+    // after left rotation and averaging operation (refer to BnB algorithm : Qi et al. 2017)
+    public double getSLowerBoundOnR3(SaupeTensorVector s) throws IOException {
+        ThreeSphereSampler.Initialize();
+        double minDa = 0;
+        for(Quaternion q : ThreeSphereSampler.QList) {
+            SaupeTensorVector st = new SaupeTensorVector(s);
+            st.rotateByQ(q);
+            st.averageByLambda(getXUpper(), getYUpper(), getZUpper());
+            double t = Math.abs(st.getPrincipleComponent());
+            if(t <= minDa)
+                minDa = t;
+        }
+        return minDa;
+    }
+
+    // Prunes the given region by branch and bound sampling on Full Space of S3 with the center of this region as
+    // the point in R3 (lambda1, lambda2, lambda3)
+    public void pruneStep2(SaupeTensorVector s1, SaupeTensorVector s2) {
+        RegionS3 qLSpace = new RegionS3();
+        allowedLS3 = qLSpace.getValidRegionsInS3(this, s1, s2);
     }
 
     // Static methods:

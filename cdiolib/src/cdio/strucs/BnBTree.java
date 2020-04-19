@@ -71,7 +71,7 @@ public class BnBTree {
                 // For each node to be branched, branch node:
                 // Get the list of children of node:
                 List<RegionVertex> children = RegionVertex.ConvertToRegionVertices(
-                        node.region.branchEven(RegionR3.GetBranchSize(), RegionR3.GetBranchSize(),
+                        node.regionR3.branchEven(RegionR3.GetBranchSize(), RegionR3.GetBranchSize(),
                         RegionR3.GetBranchSize()));
                 // Add edge from node to its children:
                 for(RegionVertex child:children) {

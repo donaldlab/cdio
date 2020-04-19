@@ -8,7 +8,9 @@ public class BinghamDistribution extends ContinuousDistribution<Quaternion>{
     // Data Members:
     public Quaternion qL;
     public Quaternion qR;
-    public Matrix gamma;
+    public double lambda1;
+    public double lambda2;
+    public double lambda3;
 
     // Initializers:
 
@@ -16,7 +18,12 @@ public class BinghamDistribution extends ContinuousDistribution<Quaternion>{
     public BinghamDistribution() {}
 
     // TODO:
-    public BinghamDistribution(double[] qL, double[] gamma, double[] qR) {
+    public BinghamDistribution(Quaternion qL, double lambda1, double lambda2, double lambda3, Quaternion qR) {
+        this.qL = qL;
+        this.qR = qR;
+        this.lambda1 = lambda1;
+        this.lambda2 = lambda2;
+        this.lambda3 = lambda3;
     }
 
     // Member Methods:
@@ -34,12 +41,14 @@ public class BinghamDistribution extends ContinuousDistribution<Quaternion>{
     // Output the Qavg(x) where qi ~ S^3 based of definition of Q in CDIO algorithm:
     public double[][] QAverage(Quaternion x) {
         double[][] out = new double[5][5];
+        return out;
     }
 
     // TODO:
     // Output the Q(x) where qi ~ S^3 based of definition of Q in CDIO algorithm:
     public double[][] QMatrix(Quaternion x) {
         double[][] out = new double[5][5];
+        return out;
     }
 
     // Static Methods:
@@ -48,5 +57,6 @@ public class BinghamDistribution extends ContinuousDistribution<Quaternion>{
     public static double PDF(Quaternion qL, double[] gamma, Quaternion qR, Quaternion q) {
         // Returns the PDF of RotM(q) given the other 3 params of Bingham Distribution
         // TODO:
+        return 0;
     }
 }
