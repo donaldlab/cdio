@@ -2,6 +2,7 @@ package cdio.math.manopt;
 
 import cdio.math.space.Vector;
 import cdio.strucs.ThreeSphereSampler;
+import libprotnmr.math.Quaternion;
 
 import java.io.IOException;
 
@@ -36,6 +37,10 @@ public class S3Point {
         this.x = cos * this.x + gradient.data[0] * sin / norm;
         this.y = cos * this.y + gradient.data[1] * sin / norm;
         this.z = cos * this.z + gradient.data[2] * sin / norm;
+    }
+
+    public Quaternion getQuaternion() {
+        return new Quaternion(w, x, y, z);
     }
 
     // Static methods:

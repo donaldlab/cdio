@@ -13,7 +13,8 @@ public class SaupeTensorVector extends Vector {
 
     // Member Methods:
 
-    public SaupeTensorVector rotateByQ(Quaternion qL) {
+    public SaupeTensorVector rotateByQ(Quaternion q) {
+        Quaternion qL = new Quaternion(q);
         qL.conjugate();
         SquareMatrix OpQl = RotationMatrix.QuaternionToRotationMatrix(qL);
         OpQl = RotationMatrix.Q(OpQl);
